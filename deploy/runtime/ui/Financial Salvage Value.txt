@@ -1,7 +1,7 @@
 Financial Salvage Value
-864
-121
-4
+858
+107
+5
 GroupBox
 
 1
@@ -45,7 +45,7 @@ X
 213
 Y
 3
-60
+48
 Width
 3
 60
@@ -94,6 +94,54 @@ BackColour
 TabOrder
 3
 11
+Label
+
+1
+13
+Name
+5
+22
+msg_batt_salvage_value
+X
+3
+54
+Y
+3
+75
+Width
+3
+765
+Height
+3
+24
+Tool Tip
+5
+0
+Caption
+5
+118
+Storage salvage value is used to calculate levelized cost of storage (LCOS). It does not affect the project cash flow.
+TextColour
+4
+0
+0
+0
+255
+Bold
+2
+0
+FontSize
+3
+0
+WordWrap
+2
+1
+AlignRight
+2
+0
+AlignTop
+2
+1
 Numeric
 
 1
@@ -227,13 +275,13 @@ Storage salvage value
 % of storage replacement cost in final year adjusted for remaining capacity
 Salvage Value
 0
-0
+2
 1
 1
 1
 1
 0
-Default
+Numeric
 batt_salvage_value
 3
 1
@@ -261,7 +309,7 @@ Salvage Value
 1
 1
 0
-Default
+Numeric
 salvage_value
 3
 1
@@ -297,12 +345,13 @@ equations{ 'batt_salvage_value' } = define() {
 		return 0;
 	}
 };
-301
+356
 on_load{'Financial Salvage Value'} = define() {
 	tech = technology();
 	batt_replacement_tech = ( (tech=='PV Battery')
 	|| (tech=='Generic Battery') || (tech== 'PVWatts Battery'));
 	show('batt_salvage_percentage',batt_replacement_tech);
 	show('batt_salvage_value',batt_replacement_tech);
+	show('msg_batt_salvage_value',batt_replacement_tech);
 	refresh();
 };
