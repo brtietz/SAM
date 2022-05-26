@@ -56,6 +56,9 @@ cambium_api_call = define( T ) {
 		'inputs': input_json,
 		'x_axis': 'interval' };
 	
+	outln(post_data);	
+	outln(url_cambium_query);	
+	
 	return curl( url_cambium_query , {'post' : json_write(post_data)} );
 };
 
@@ -161,6 +164,9 @@ in_array = define(item,array) {
 
 // Main ////////////////////////////////////////////////////////////////////////
 
+ppa_model = false;
+overwrite_inputs = false;
+
 // get available data choices from cambium
 X = get_meta_data();
 
@@ -175,25 +181,34 @@ IN.year = choose_from_list( X.fields.years,'Choose a year:','Cambium Years');
 // request data from cambium
 json_raw = cambium_api_call( IN );
 json_data = json_read( json_raw );
-price_data = json_data.data.layers[0].y;
+// if json html response
+if(strpos(json_data,'error') > -1)
+{
+	display_cambium_error(json_raw);
+}
+// normal json response
+else
+{
+	price_data = json_data.data.layers[0].y;
 
-// sanity check for user
-outln( 'Number of price values (should be 8760 hourly values) = ' + #price_data );
-outln( 'Minimum price = $' + min(price_data) + '/MWh' );
-outln( 'Maximum price = $' + max(price_data) + '/MWh' );
-outln( 'Mean price = $' + mean(price_data) + '/MWh' );
+	// sanity check for user
+	outln( 'Number of price values (should be 8760 hourly values) = ' + #price_data );
+	outln( 'Minimum price = $' + min(price_data) + '/MWh' );
+	outln( 'Maximum price = $' + max(price_data) + '/MWh' );
+	outln( 'Mean price = $' + mean(price_data) + '/MWh' );
 
-dview(1,1,'Cambium Price Data',IN.metric,'$/MWh',1.0,price_data);
+	dview(1,1,'Cambium Price Data',IN.metric,'$/MWh',1.0,price_data);
 
-// write data to time series power price inputs for PPA models
-config = configuration();
+	// write data to time series power price inputs for PPA models
+	config = configuration();
 
-ppa_model = (  config[1] == 'Single Owner' 
+	ppa_model = (  config[1] == 'Single Owner' 
 			|| config[1] == 'Leveraged Partnership Flip'
 			|| config[1] == 'All Equity Partnership Flip'
 			|| config[1] == 'Sale Leaseback' );
 
-overwrite_inputs = yesno( 'Overwrite inputs?\nDo you want to replace PPA price inputs with the hourly cambium data?');
+	overwrite_inputs = yesno( 'Overwrite inputs?\nDo you want to replace PPA price inputs with the hourly cambium data?');
+}
 
 if ( ppa_model && overwrite_inputs )
 {
