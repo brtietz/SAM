@@ -623,10 +623,11 @@ bool Case::LoadValuesFromExternalSource(const VarTable& vt, LoadStatus* di, VarT
 	if (RecalculateAll(true) < 0) // shj - testing
 	{
 		wxString e("Error recalculating equations after loading values from external source");	
-		if ( di ) di->error = e;// shj - testing
+		if ( di ) di->error = e;
 		wxLogStatus( e );
-		return false; // shj - testing
+		return false;
 	}
+
 	return ok;
 }
 
